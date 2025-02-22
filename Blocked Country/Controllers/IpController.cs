@@ -1,4 +1,5 @@
-﻿using Blocked_CountryCore.Interfaces;
+﻿using Blocked_Country.Helpers;
+using Blocked_CountryCore.Interfaces;
 using Blocked_CountryCore.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.HttpResults;
@@ -22,6 +23,10 @@ namespace Blocked_Country.Controllers
         [HttpGet("lookup")]
         public async Task<ActionResult<IpDetails>> lookup([FromQuery] string? Ip=null) 
         {
+            if(Ip is not null&&!IsIp.IsValidIPv4(Ip)) 
+            {
+                return BadRequest("the Ip is not vaild");
+            }
             
             if (Ip is null)
             {
@@ -31,10 +36,8 @@ namespace Blocked_Country.Controllers
             }
             var useragent = _contextAccessor.HttpContext.Request.Headers["User-Agent"].ToString();
             var countrydetails = await _ipApiService.GetIpDetailsAsync(Ip, useragent);
-
             return countrydetails == null ? BadRequest($"the country is bloced") : Ok(countrydetails);
-            ;
-
+          
         }
         [HttpGet("/check-block")]
         public async Task<ActionResult<bool>> Checkblock() 
