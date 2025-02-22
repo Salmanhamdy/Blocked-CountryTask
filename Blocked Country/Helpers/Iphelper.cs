@@ -3,7 +3,7 @@ using System.Net;
 
 namespace Blocked_Country.Helpers
 {
-    public static class IsIp
+    public static class Iphelper
     {
        public static bool IsValidIPv4(string ipString)
         {
@@ -21,6 +21,12 @@ namespace Blocked_Country.Helpers
             byte tempForParsing;
 
             return splitValues.All(r => byte.TryParse(r, out tempForParsing));
+        }
+        public static string iploopback(string ip) 
+        {
+            if (ip == "::1")
+                return ip = "127.0.0.1";
+            return ip;
         }
     }
 }

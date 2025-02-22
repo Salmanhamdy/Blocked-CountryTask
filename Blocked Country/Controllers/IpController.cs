@@ -23,7 +23,7 @@ namespace Blocked_Country.Controllers
         [HttpGet("lookup")]
         public async Task<ActionResult<IpDetails>> lookup([FromQuery] string? Ip=null) 
         {
-            if(Ip is not null&&!IsIp.IsValidIPv4(Ip)) 
+            if(Ip is not null&&!Iphelper.IsValidIPv4(Ip)) 
             {
                 return BadRequest("the Ip is not vaild");
             }
@@ -32,7 +32,7 @@ namespace Blocked_Country.Controllers
             {
                Ip= _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
                 // return local host
-                Ip = "197.36.183.187";
+                Ip = Iphelper.iploopback(Ip);
             }
             var useragent = _contextAccessor.HttpContext.Request.Headers["User-Agent"].ToString();
             var countrydetails = await _ipApiService.GetIpDetailsAsync(Ip, useragent);
@@ -43,7 +43,7 @@ namespace Blocked_Country.Controllers
         public async Task<ActionResult<bool>> Checkblock() 
         {
             var ip = _contextAccessor.HttpContext.Connection.RemoteIpAddress.ToString();
-            ip = "197.36.183.187";
+            ip = Iphelper.iploopback(ip);
             var useragent = _contextAccessor.HttpContext.Request.Headers["User-Agent"].ToString();
             bool Result = await _ipApiService.CheckBlocedCountryAsync(ip, useragent);
             return Result ==false ? BadRequest($"the country is bloced"):Ok("country is not bloced");
